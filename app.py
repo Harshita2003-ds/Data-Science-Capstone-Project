@@ -60,25 +60,25 @@ if st.button('Predict Selling Price'):
         except Exception as e:
             st.error(f"An unexpected error occurred: {e}")
 
-# Saving model (optional, only if retraining is required)
-# Set up the Random Forest model
-final_model = RandomForestRegressor(n_estimators=100, max_depth=None, random_state=42)
+# # Saving model (optional, only if retraining is required)
+# # Set up the Random Forest model
+# final_model = RandomForestRegressor(n_estimators=100, max_depth=None, random_state=42)
 
-# Train the Random Forest model (uncomment and fit when needed)
-# final_model.fit(x, y)
+# # Train the Random Forest model (uncomment and fit when needed)
+# # final_model.fit(x, y)
 
-# Save the final model using pickle
-try:
-    with open('Random_Forest.pkl', 'wb') as f:
-        pickle.dump(final_model, f)
-    st.success("Model saved successfully as 'Random_Forest.pkl'")
-except Exception as e:
-    st.error(f"An error occurred while saving the model: {e}")
+# # Save the final model using pickle
+# try:
+#     with open('Random_Forest.pkl', 'wb') as f:
+#         pickle.dump(final_model, f)
+#     st.success("Model saved successfully as 'Random_Forest.pkl'")
+# except Exception as e:
+#     st.error(f"An error occurred while saving the model: {e}")
 
-# Load the model
-try:
-    with open('Random_Forest.pkl', 'rb') as f:
-        load_model = pickle.load(f)
-    st.success("Model loaded successfully: Random Forest")
-except Exception as e:
-    st.error(f"An error occurred while loading the model: {e}")
+# # Load the model
+# try:
+#     with open('Random_Forest.pkl', 'rb') as f:
+#         load_model = pickle.load(f)
+#     st.success("Model loaded successfully: Random Forest")
+# except Exception as e:
+#     st.error(f"An error occurred while loading the model: {e}")

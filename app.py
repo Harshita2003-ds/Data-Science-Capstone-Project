@@ -3,19 +3,18 @@ import streamlit as st
 import pandas as pd
 import joblib  # For loading the saved model
 import warnings
+warnings.filterwarnings("ignore")
 import numpy as np
 from sklearn import config_context
+import os  # For file handling
+import pickle  # For saving/loading model
 
-warnings.filterwarnings("ignore")
-
-# Load your saved Random Forest model
-st.write("Loading model...")
+# Load your saved Random Forest model with safe config
 with config_context(assume_finite=True):
     try:
         model = joblib.load('Random_Forest_compressed.pkl')
-        st.write("Model loaded successfully.")
     except Exception as e:
-        st.error(f"Error loading model: {e}")
+        st.error(f"An error occurred while loading the model: {e}")
 
 # Define your app's title and description
 st.title("Car Selling Price Prediction App")
@@ -49,9 +48,6 @@ if st.button('Predict Selling Price'):
     elif any(x == '' for x in [brand, model_input, variant, name, fuel, seller_type, transmission, owner]):
         st.error("Please fill in all the categorical details.")
     else:
-        # Display the input data for debugging
-        st.write(f"Inputs received: {input_data}")
-
         # Reshape input if necessary (assuming the model expects a 2D array)
         input_data = input_data.reshape(1, -1)  # 1 sample, multiple features
         
@@ -59,5 +55,35 @@ if st.button('Predict Selling Price'):
         try:
             predicted_price = model.predict(input_data)[0]
             st.success(f"The predicted selling price is: {predicted_price:.2f}")
+        except AttributeError as e:
+            st.error(f"An attribute error occurred during prediction: {e}")
         except Exception as e:
-            st.error(f"An error occurred during prediction: {e}")
+            st.error(f"An unexpected error occurred: {e}")
+
+# Saving model
+# Set up the Random Forest model
+final_model = RandomForestRegressor(n_estimators=100, max_depth=None, random_state=42)
+
+# Train the Random Forest model
+# final_model.fit(x, y)  # Uncomment when ready to retrain the model with your data
+
+# Save the final model using pickle
+model_directory = "../models"
+
+# Check if the directory exists, if not, create it
+if not os.path.exists(model_directory):
+    os.makedirs(model_directory)
+
+# Save the final model using pickle
+try:
+    pickle.dump(final_model, open(f"{model_directory}/Random_Forest.pkl", "wb"))
+    st.success(f"Model saved successfully at: {model_directory}/Random_Forest.pkl")
+except Exception as e:
+    st.error(f"An error occurred while saving the model: {e}")
+
+# Load the model
+try:
+    load_model = pickle.load(open(f"{model_directory}/Random_Forest.pkl", "rb"))
+    st.success(f"Model loaded successfully: Random Forest")
+except Exception as e:
+    st.error(f"An error occurred while loading the model: {e}")

@@ -12,7 +12,7 @@ from sklearn.ensemble import GradientBoostingRegressor
 # Load your saved Gradient Boosting model with safe config
 with config_context(assume_finite=True):
     try:
-        model = joblib.load('Gradient_Boosting_compressed.pkl')
+        model = joblib.load('Gradient_boosting_model.pkl')
     except Exception as e:
         st.error(f"An error occurred while loading the model: {e}")
 
@@ -69,7 +69,7 @@ final_model = GradientBoostingRegressor(n_estimators=100, learning_rate=0.1, max
 
 # Save the final model using pickle
 try:
-    with open('Gradient_Boosting.pkl', 'wb') as f:
+    with open('Gradient_boosting_model.pkl', 'wb') as f:
         pickle.dump(final_model, f)
     st.success("Model saved successfully as 'Gradient_Boosting.pkl'")
 except Exception as e:
@@ -77,7 +77,7 @@ except Exception as e:
 
 # Load the model
 try:
-    with open('Gradient_Boosting.pkl', 'rb') as f:
+    with open('Gradient_boosting_model.pkl', 'rb') as f:
         load_model = pickle.load(f)
     st.success("Model loaded successfully: Gradient Boosting")
 except Exception as e:

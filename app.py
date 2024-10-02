@@ -5,7 +5,7 @@ import joblib  # For loading the saved model
 import warnings
 warnings.filterwarnings("ignore")
 import numpy as np
-import pickle 
+import pickle
 from sklearn import config_context
 from sklearn.ensemble import GradientBoostingRegressor
 
@@ -36,24 +36,35 @@ owner = st.selectbox('Select Owner Type', ['First Owner', 'Second Owner', 'Third
 
 # Button to trigger prediction
 if st.button('Predict Selling Price'):
-    # Prepare the input data
-    input_data = np.array([brand, model_input, variant, name, year, km_driven, fuel, seller_type, transmission, owner])
+    # Prepare the input data in DataFrame format
+    input_data = pd.DataFrame({
+        'Brand': [brand],
+        'Model': [model_input],
+        'Variant': [variant],
+        'Name': [name],
+        'Year': [year],
+        'Km_Driven': [km_driven],
+        'Fuel': [fuel],
+        'Seller_Type': [seller_type],
+        'Transmission': [transmission],
+        'Owner': [owner]
+    })
 
-    # Separate numerical fields from non-numerical ones
-    numerical_data = np.array([year, km_driven])  # Only numerical fields (year, km_driven in this case)
-
-    # Check for missing or NaN values in the numerical fields
-    if np.isnan(numerical_data).any():
-        st.error("Numerical inputs contain missing values. Please correct the input and try again.")
-    elif any(x == '' for x in [brand, model_input, variant, name, fuel, seller_type, transmission, owner]):
-        st.error("Please fill in all the categorical details.")
+    # Check for missing or NaN values
+    if input_data.isnull().values.any():
+        st.error("Inputs contain missing values. Please correct the input and try again.")
+    elif input_data.isin(['', None]).any().any():
+        st.error("Please fill in all the details.")
     else:
-        # Reshape input if necessary (assuming the model expects a 2D array)
-        input_data = input_data.reshape(1, -1)  # 1 sample, multiple features
-        
+        # One-hot encode categorical variables
+        input_data_encoded = pd.get_dummies(input_data, drop_first=True)
+
+        # Ensure the model's expected feature names match the input
+        input_data_encoded = input_data_encoded.reindex(columns=model.feature_names_in_, fill_value=0)
+
         # Perform the prediction using the loaded model
         try:
-            predicted_price = model.predict(input_data)[0]
+            predicted_price = model.predict(input_data_encoded)[0]
             st.success(f"The predicted selling price is: {predicted_price:.2f}")
         except AttributeError as e:
             st.error(f"An attribute error occurred during prediction: {e}")

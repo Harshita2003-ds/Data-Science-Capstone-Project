@@ -50,16 +50,11 @@ if st.button('Predict Selling Price'):
         # One-hot encode categorical variables
         input_data_encoded = pd.get_dummies(input_data, drop_first=True)
 
-        # Specify expected feature names based on the training process
-        expected_columns = ['Year', 'Km_Driven', 'Brand_Audi', 'Brand_BMW', 'Brand_Chevrolet', 
-                            'Brand_Daewoo', 'Brand_Datsun', 'Brand_Fiat', 'Brand_Force', 
-                            'Brand_Ford', 'Fuel_Diesel', 'Fuel_Electric', 'Fuel_LPG', 
-                            'Fuel_Petrol', 'Seller_Type_Individual', 'Seller_Type_Dealer', 
-                            'Transmission_Automatic', 'Owner_Second Owner', 
-                            'Owner_Third Owner', 'Owner_Fourth & Above Owner']
+        # Load the model's expected feature names from the fitted model
+        expected_features = model.feature_names_in_  # Feature names used during fitting
 
-        # Ensure the model's expected feature names match the input
-        input_data_encoded = input_data_encoded.reindex(columns=expected_columns, fill_value=0)
+        # Ensure the input DataFrame has the same columns as the model expects
+        input_data_encoded = input_data_encoded.reindex(columns=expected_features, fill_value=0)
 
         # Perform the prediction using the loaded model
         try:
